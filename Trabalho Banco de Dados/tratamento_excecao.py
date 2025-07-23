@@ -17,12 +17,15 @@ def registrar_venda_cliente_inexistente():
     conexao = sqlite3.connect("SuperMercado_SupriBem.db")
     cursor = conexao.cursor()
     try:
+        # Ativar integridade referencial
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
         # Tentar inserir pedido com cliente_id inexistente (ex: 999999)
         cursor.execute("INSERT INTO Pedidos (data, vendedor, cliente_id) VALUES (?, ?, ?);",
                        ("2025-07-21 10:00:00", "Vendedor 🍷🗿", 999999))
         conexao.commit()
     except sqlite3.IntegrityError:
-        print("Falha: Cliente não encontrado para registrar a venda.")
+        print("Falha: Cliente não encontrado para registrar a venda")
     finally:
         conexao.close()
 

@@ -127,16 +127,57 @@ def inserir_produto():
     categoria = input("Categoria: ")
     cursor.execute("INSERT INTO Produtos (nome, preco, categoria) VALUES (?, ?, ?);", (nome, preco, categoria))
 
+def inserir_pedido():
+    cursor.execute("SELECT id, nome FROM Clientes")
+    clientes = cursor.fetchall()
+    print("\nClientes disponíveis:")
+    for c in clientes:
+        print(f"{c[0]} - {c[1]}")
+
+    cliente_id = int(input("Digite o ID do cliente para o pedido: "))
+    vendedor = input("Nome do vendedor: ")
+    data = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    cursor.execute("INSERT INTO Pedidos (data, vendedor, cliente_id) VALUES (?, ?, ?);", (data, vendedor, cliente_id))
+    pedido_id = cursor.lastrowid
+
+    cursor.execute("SELECT id, nome, preco FROM Produtos")
+    produtos = cursor.fetchall()
+    print("\nProdutos disponíveis:")
+    for p in produtos:
+        print(f"{p[0]} - {p[1]} (R${p[2]:.2f})")
+
+    while True:
+        produto_id = int(input("Digite o ID do produto (ou 0 para finalizar o pedido): "))
+        if produto_id == 0:
+            break
+        quantidade = int(input("Quantidade: "))
+
+        cursor.execute("SELECT preco FROM Produtos WHERE id = ?", (produto_id,))
+        preco = cursor.fetchone()[0]
+
+        cursor.execute("""
+            INSERT INTO ItensPedido (pedido_id, produto_id, quantidade, valor_unitario)
+            VALUES (?, ?, ?, ?)
+        """, (pedido_id, produto_id, quantidade, preco))
+
+    print(f"Pedido {pedido_id} inserido com sucesso!")
+
+# ------------------------ #
+# MENU INTERATIVO         #
+# ------------------------ #
 while True:
-    opcao = input("\nDeseja inserir mais dados? (cliente/produto/não): ").strip().lower()
+    opcao = input("\nDeseja inserir mais dados? (cliente/produto/pedido/não): ").strip().lower()
     if opcao == "cliente":
         inserir_cliente()
     elif opcao == "produto":
         inserir_produto()
-    elif opcao in ["n", "não", "nao", "nao", "não"]:
+    elif opcao == "pedido":
+        inserir_pedido()
+    elif opcao in ["n", "não", "nao"]:
         break
     else:
-        print("Opção inválida. Digite 'cliente', 'produto' ou 'não'.")
+        print("Opção inválida. Digite 'cliente', 'produto', 'pedido' ou 'não'.")
 
 # ------------------------- #
 # Finalizando e salvando    #
