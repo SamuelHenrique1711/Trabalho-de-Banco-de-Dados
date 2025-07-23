@@ -34,7 +34,7 @@ def consulta_itens_produtos_pedidos():
         JOIN Produtos ON ItensPedido.produto_id = Produtos.id
         JOIN Pedidos ON ItensPedido.pedido_id = Pedidos.id
         ORDER BY Pedidos.data DESC
-        LIMIT 30;  -- Segundo uso de LIMIT
+        LIMIT 35;  -- Segundo uso de LIMIT
     """)
     resultados = cursor.fetchall()
     con.close()
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     for pedido in consulta_pedidos_clientes():
         print(pedido)
 
-    print("\n15 Itens do Pedido com Produtos e Datas (LIMIT 15):")
+    print("\n35 Itens do Pedido com Produtos e Datas (LIMIT 35):")
     for item in consulta_itens_produtos_pedidos():
         print(item)
 
